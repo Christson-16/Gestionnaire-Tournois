@@ -1,0 +1,2 @@
+Les classes joueurs et equipe utilise tous deux les méthodes métiers et l'affichage je pense réduire ça
+en créant une classe qui contiendra ces méthodes là. 
