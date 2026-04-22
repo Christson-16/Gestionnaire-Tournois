@@ -1,0 +1,7 @@
+# Dépendances du projet Gestionnaire de Tournois E-Sport
+
+# Pour la base de données SQLite (déjà inclus dans Python, mais on le note)
+# sqlite3
+
+# Pour les tests (optionnel pour maintenant)
+# pytest==7.4.0
