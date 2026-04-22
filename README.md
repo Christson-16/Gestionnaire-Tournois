@@ -22,21 +22,18 @@ Permet de :
 ## Structure du Projet
 Gestionnaire-Tournois-ESort/
 ├── src/
-│   ├── joueur.py          # Classe Joueur (avec encapsulation)
-│   ├── equipe.py          # Classe Équipe (gestion des joueurs)
-│   ├── match.py           # Classe Match (simulation basée sur niveaux)
-│   ├── tournoi.py         # Classe Tournoi (gestion complète)
-│   ├── bracket.py         # Classe Bracket (élimination directe + BYE)
-│   ├── main.py            # Menu interactif principal
-│   └── data_manager.py    # Gestion des données (à développer)
+│   ├── bracket.py           
+│   ├── data_manager.py         
+│   ├── equipe.py          
+│   ├── joueur.py       
+│   ├── main.py       
+│   ├── match.py
+├── requirements.txt          
+│   └──   tournoi.py  
 ├── tests/
-│   └── test_joueur.py     # Tests unitaires (à développer)
-├── docs/
-│   └── LOGIQUE.md         # Documentation de la logique
-├── .gitignore             # Fichiers à ignorer
-├── requirements.txt       # Dépendances
-├── Cahier_des_Charges_Tournois_ESort.docx  # Cahier des charges
-└── README.md              # Ce fichier
+│   └── test_joueur.py
+├── .gitignore                 
+└── README.md              
 
 ## Installation
 
