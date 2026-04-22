@@ -23,7 +23,7 @@ def afficher_menu_principal():
     if tournoi_actuel:
         print(f" Tournoi actif: {tournoi_actuel.get_nom()} ({tournoi_actuel.get_statut()})")
     else:
-        print("⚪ Aucun tournoi sélectionné")
+        print("Aucun tournoi sélectionné")
     
     print("\n MENU PRINCIPAL:")
     print("  1. Gérer les tournois")

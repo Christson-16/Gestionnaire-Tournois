@@ -70,7 +70,7 @@ class Bracket:
             equipe_bye = random.choice(equipes)
             equipes.remove(equipe_bye)
             gagnants_tour.append(equipe_bye)
-            print(f"\n⚡ BYE TOUR {num_tour}: {equipe_bye.get_nom()} passe directement")
+            print(f"\n BYE TOUR {num_tour}: {equipe_bye.get_nom()} passe directement")
         
         # Créer les matchs pour les équipes restantes
         for i in range(0, len(equipes), 2):
