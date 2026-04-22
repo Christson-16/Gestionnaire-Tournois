@@ -1,5 +1,3 @@
-
-
 import random
 from match import Match
 

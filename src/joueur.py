@@ -2,7 +2,6 @@
 
 class Joueur:
     
-    
     def __init__(self, id_joueur, pseudo, email, niveau):
        
         self._id_joueur = id_joueur

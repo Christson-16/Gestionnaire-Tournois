@@ -1,5 +1,3 @@
-
-
 class Tournoi:
     
     def __init__(self, id_tournoi, nom, date, jeu, max_equipes):

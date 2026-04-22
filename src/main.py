@@ -1,8 +1,3 @@
-"""
-MENU PRINCIPAL - GESTIONNAIRE DE TOURNOIS E-SPORT
-Application interactive avec gestion de PLUSIEURS tournois
-"""
-
 from joueur import Joueur
 from equipe import Equipe
 from match import Match

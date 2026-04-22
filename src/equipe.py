@@ -1,7 +1,4 @@
-
-
 class Equipe:
- 
     
     def __init__(self, id_equipe, nom_equipe, niveau=50):
         
