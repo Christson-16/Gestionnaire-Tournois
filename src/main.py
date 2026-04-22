@@ -1,4 +1,7 @@
-# Point d'entrée du programme - Menu interactif
+"""
+MENU PRINCIPAL - GESTIONNAIRE DE TOURNOIS E-SPORT
+Application interactive avec gestion de PLUSIEURS tournois
+"""
 
 from joueur import Joueur
 from equipe import Equipe
@@ -6,101 +9,292 @@ from match import Match
 from tournoi import Tournoi
 from bracket import Bracket
 
-# Variables globales
-tournoi_actuel = None
+# ============= VARIABLES GLOBALES =============
+liste_tournois = []  # Liste de tous les tournois créés
+tournoi_actuel = None  # Tournoi sélectionné actuellement
+bracket_actuel = None  # Bracket du tournoi actuel
+
 compteur_joueur = 1
 compteur_equipe = 1
-compteur_match = 1
+compteur_tournoi = 1
 compteur_bracket = 1
 
-# Fonction pour afficher le menu principal
+# ============= MENU PRINCIPAL =============
 def afficher_menu_principal():
-    print("\n" + "="*60)
-    print("       GESTIONNAIRE DE TOURNOIS E-SPORT")
-    print("="*60)
-    print("1. Créer un nouveau tournoi")
-    print("2. Ajouter une équipe au tournoi")
-    print("3. Ajouter un joueur à une équipe")
-    print("4. Afficher les équipes du tournoi")
-    print("5. Générer le bracket")
-    print("6. Afficher le bracket et les matchs")
-    print("7. Enregistrer un résultat de match")
-    print("8. Afficher les statistiques du tournoi")
-    print("9. Quitter")
-    print("="*60)
+    """Affiche le menu principal"""
+    print("\n" + "="*70)
+    print("         🎮 GESTIONNAIRE DE TOURNOIS E-SPORT 🎮")
+    print("="*70)
+    
+    # Afficher le tournoi actif
+    if tournoi_actuel:
+        print(f"🔴 Tournoi actif: {tournoi_actuel.get_nom()} ({tournoi_actuel.get_statut()})")
+    else:
+        print("⚪ Aucun tournoi sélectionné")
+    
+    print("\n🏠 MENU PRINCIPAL:")
+    print("  1. Gérer les tournois (créer, sélectionner, supprimer)")
+    print("  2. Gérer équipes et joueurs")
+    print("  3. Générer le bracket")
+    print("  4. Simuler les matchs")
+    print("  5. Afficher statistiques")
+    print("  6. Quitter")
+    print("="*70)
 
-# Fonction pour créer un tournoi
+def afficher_menu_tournois():
+    """Affiche le menu de gestion des tournois"""
+    print("\n" + "="*70)
+    print("         🏆 GESTION DES TOURNOIS")
+    print("="*70)
+    print("  1. Créer un nouveau tournoi")
+    print("  2. Afficher la liste des tournois")
+    print("  3. Sélectionner un tournoi")
+    print("  4. Supprimer un tournoi")
+    print("  5. Afficher infos du tournoi actif")
+    print("  6. Retour au menu principal")
+    print("="*70)
+
+def afficher_sous_menu_equipes():
+    """Affiche le sous-menu pour gérer équipes et joueurs"""
+    print("\n" + "="*70)
+    print("         👥 GESTION DES ÉQUIPES ET JOUEURS")
+    print("="*70)
+    print("  1. Ajouter une équipe")
+    print("  2. Afficher les équipes")
+    print("  3. Ajouter un joueur à une équipe")
+    print("  4. Modifier un joueur")
+    print("  5. Supprimer un joueur")
+    print("  6. Supprimer une équipe")
+    print("  7. Retour au menu principal")
+    print("="*70)
+
+def afficher_sous_menu_matchs():
+    """Affiche le sous-menu pour les matchs"""
+    print("\n" + "="*70)
+    print("         ⚽ GESTION DES MATCHS")
+    print("="*70)
+    print("  1. Afficher le bracket actuel")
+    print("  2. Simuler tous les matchs du tour")
+    print("  3. Passer au tour suivant")
+    print("  4. Afficher statistiques du bracket")
+    print("  5. Retour au menu principal")
+    print("="*70)
+
+# ============= GESTION DES TOURNOIS =============
 def creer_tournoi():
+    """Crée un nouveau tournoi"""
+    global tournoi_actuel, compteur_tournoi
+    
+    print("\n" + "="*70)
+    print("         🏆 CRÉER UN NOUVEAU TOURNOI")
+    print("="*70)
+    
+    nom = input("\n📝 Nom du tournoi: ").strip()
+    if not nom:
+        print("⚠ Le nom ne peut pas être vide")
+        return
+    
+    date = input("📅 Date (JJ/MM/YYYY): ").strip()
+    if not date:
+        print("⚠ La date ne peut pas être vide")
+        return
+    
+    jeu = input("🎮 Jeu joué (ex: League of Legends): ").strip()
+    if not jeu:
+        print("⚠ Le jeu ne peut pas être vide")
+        return
+    
+    try:
+        max_equipes = int(input("👥 Nombre maximum d'équipes (minimum 2): "))
+        if max_equipes < 2:
+            print("⚠ Le minimum est 2 équipes")
+            return
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+        return
+    
+    # Créer le tournoi
+    nouveau_tournoi = Tournoi(compteur_tournoi, nom, date, jeu, max_equipes)
+    liste_tournois.append(nouveau_tournoi)
+    tournoi_actuel = nouveau_tournoi
+    compteur_tournoi += 1
+    
+    print(f"\n✅ Tournoi '{nom}' créé avec succès!")
+    nouveau_tournoi.afficher_info()
+
+def afficher_liste_tournois():
+    """Affiche la liste de tous les tournois"""
+    if len(liste_tournois) == 0:
+        print("\n⚠ Aucun tournoi créé")
+        return
+    
+    print("\n" + "="*70)
+    print("         📋 LISTE DES TOURNOIS")
+    print("="*70)
+    
+    for i, t in enumerate(liste_tournois, 1):
+        statut_emoji = "🟢" if t.get_statut() == "En Cours" else "🟡" if t.get_statut() == "Enregistrement" else "🔴"
+        actif = "⭐ ACTIF" if t == tournoi_actuel else ""
+        print(f"\n{i}. {statut_emoji} {t.get_nom()} {actif}")
+        print(f"   Jeu: {t.get_jeu()}")
+        print(f"   Équipes: {t.get_nombre_equipes()}/{t.get_max_equipes()}")
+        print(f"   Statut: {t.get_statut()}")
+
+def selectionner_tournoi():
+    """Permet de sélectionner un tournoi actif"""
     global tournoi_actuel
     
-    print("\n--- CRÉER UN NOUVEAU TOURNOI ---")
-    nom = input("Nom du tournoi: ")
-    date = input("Date du tournoi (JJ/MM/YYYY): ")
-    jeu = input("Jeu joué (ex: League of Legends): ")
+    if len(liste_tournois) == 0:
+        print("\n⚠ Aucun tournoi créé")
+        return
+    
+    afficher_liste_tournois()
     
     try:
-        max_participants = int(input("Nombre maximum d'équipes: "))
-    except:
-        print("Erreur: Veuillez entrer un nombre valide")
+        choix = int(input("\n🎯 Choisir un tournoi (numéro): ")) - 1
+        if 0 <= choix < len(liste_tournois):
+            tournoi_actuel = liste_tournois[choix]
+            print(f"\n✅ Tournoi '{tournoi_actuel.get_nom()}' sélectionné!")
+        else:
+            print("⚠ Choix invalide!")
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+
+def supprimer_tournoi():
+    """Supprime un tournoi"""
+    global tournoi_actuel
+    
+    if len(liste_tournois) == 0:
+        print("\n⚠ Aucun tournoi créé")
         return
     
-    tournoi_actuel = Tournoi(1, nom, date, jeu, max_participants)
-    print(f"\n✓ Tournoi '{nom}' créé avec succès!")
+    afficher_liste_tournois()
+    
+    try:
+        choix = int(input("\n🗑️ Choisir un tournoi à supprimer (numéro): ")) - 1
+        if 0 <= choix < len(liste_tournois):
+            tournoi_supprime = liste_tournois.pop(choix)
+            print(f"\n✅ Tournoi '{tournoi_supprime.get_nom()}' supprimé!")
+            
+            # Si c'était le tournoi actif, réinitialiser
+            if tournoi_actuel == tournoi_supprime:
+                tournoi_actuel = liste_tournois[0] if liste_tournois else None
+        else:
+            print("⚠ Choix invalide!")
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
 
-# Fonction pour ajouter une équipe
+def afficher_info_tournoi_actif():
+    """Affiche les infos du tournoi actif"""
+    if tournoi_actuel is None:
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
+        return
+    
+    print("\n")
+    tournoi_actuel.afficher_info()
+
+# ============= GESTION DES ÉQUIPES =============
 def ajouter_equipe():
-    global tournoi_actuel, compteur_equipe
+    """Ajoute une équipe au tournoi actif"""
+    global compteur_equipe
     
     if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    print("\n--- AJOUTER UNE ÉQUIPE ---")
-    nom_equipe = input("Nom de l'équipe: ")
+    if tournoi_actuel.get_statut() == "En Cours":
+        print("\n⚠ ❌ Impossible d'ajouter une équipe (tournoi en cours)")
+        return
     
-    equipe = Equipe(compteur_equipe, nom_equipe)
+    print("\n" + "="*70)
+    print("         ➕ AJOUTER UNE ÉQUIPE")
+    print("="*70)
+    
+    nom_equipe = input("\n📝 Nom de l'équipe: ").strip()
+    if not nom_equipe:
+        print("⚠ Le nom ne peut pas être vide")
+        return
+    
+    try:
+        niveau = int(input("💪 Niveau de force (0-100): "))
+        if not (0 <= niveau <= 100):
+            print("⚠ Le niveau doit être entre 0 et 100")
+            return
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+        return
+    
+    equipe = Equipe(compteur_equipe, nom_equipe, niveau)
     tournoi_actuel.ajouter_equipe(equipe)
     compteur_equipe += 1
-    print(f"✓ Équipe '{nom_equipe}' ajoutée!")
 
-# Fonction pour ajouter un joueur à une équipe
-def ajouter_joueur():
-    global tournoi_actuel, compteur_joueur
-    
+def afficher_equipes():
+    """Affiche toutes les équipes du tournoi actif"""
     if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    if len(tournoi_actuel.liste_equipes) == 0:
-        print("\n⚠ Erreur: Créez d'abord une équipe!")
+    print("\n")
+    tournoi_actuel.afficher_equipes()
+
+def supprimer_equipe():
+    """Supprime une équipe"""
+    if tournoi_actuel is None:
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    print("\n--- AJOUTER UN JOUEUR À UNE ÉQUIPE ---")
-    
-    # Afficher les équipes disponibles
-    print("\nÉquipes disponibles:")
-    for i, equipe in enumerate(tournoi_actuel.liste_equipes):
-        print(f"{i+1}. {equipe.nom_equipe}")
+    afficher_equipes()
     
     try:
-        choix = int(input("Choisir une équipe (numéro): ")) - 1
-        if choix < 0 or choix >= len(tournoi_actuel.liste_equipes):
-            print("⚠ Choix invalide!")
-            return
-    except:
-        print("⚠ Erreur: Veuillez entrer un nombre valide")
+        id_equipe = int(input("\n🗑️ ID de l'équipe à supprimer: "))
+        tournoi_actuel.supprimer_equipe(id_equipe)
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+
+# ============= GESTION DES JOUEURS =============
+def ajouter_joueur():
+    """Ajoute un joueur à une équipe"""
+    global compteur_joueur
+    
+    if tournoi_actuel is None:
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    equipe_selectionnee = tournoi_actuel.liste_equipes[choix]
+    if tournoi_actuel.get_nombre_equipes() == 0:
+        print("\n⚠ ❌ Créez d'abord une équipe!")
+        return
     
-    # Créer le joueur
-    pseudo = input("Pseudo du joueur: ")
-    email = input("Email du joueur: ")
+    print("\n" + "="*70)
+    print("         ➕ AJOUTER UN JOUEUR À UNE ÉQUIPE")
+    print("="*70)
     
-    print("Niveau du joueur:")
-    print("1. Débutant")
-    print("2. Intermédiaire")
-    print("3. Expert")
+    afficher_equipes()
+    
+    try:
+        choix = int(input("\n👥 Choisir une équipe (numéro): ")) - 1
+        if choix < 0 or choix >= tournoi_actuel.get_nombre_equipes():
+            print("⚠ Choix invalide!")
+            return
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+        return
+    
+    equipe_selectionnee = tournoi_actuel.get_equipes()[choix]
+    
+    pseudo = input("\n📝 Pseudo du joueur: ").strip()
+    if not pseudo:
+        print("⚠ Le pseudo ne peut pas être vide")
+        return
+    
+    email = input("📧 Email du joueur: ").strip()
+    if "@" not in email:
+        print("⚠ Email invalide")
+        return
+    
+    print("\n💪 Niveau du joueur:")
+    print("  1. Débutant")
+    print("  2. Intermédiaire")
+    print("  3. Expert")
     
     try:
         niveau_choix = int(input("Choisir le niveau (1-3): "))
@@ -109,185 +303,258 @@ def ajouter_joueur():
             print("⚠ Choix invalide!")
             return
         niveau = niveaux[niveau_choix]
-    except:
-        print("⚠ Erreur: Veuillez entrer un nombre valide")
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
         return
     
     joueur = Joueur(compteur_joueur, pseudo, email, niveau)
     equipe_selectionnee.ajouter_joueur(joueur)
     compteur_joueur += 1
-    print(f"\n✓ Joueur '{pseudo}' ajouté à '{equipe_selectionnee.nom_equipe}'!")
 
-# Fonction pour afficher les équipes
-def afficher_equipes():
-    global tournoi_actuel
-    
+def modifier_joueur():
+    """Modifie un joueur"""
     if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    print("\n--- ÉQUIPES DU TOURNOI ---")
-    if len(tournoi_actuel.liste_equipes) == 0:
-        print("⚠ Aucune équipe pour le moment")
+    print("\n" + "="*70)
+    print("         ✏️ MODIFIER UN JOUEUR")
+    print("="*70)
+    
+    afficher_equipes()
+    
+    try:
+        choix_equipe = int(input("\n👥 Choisir une équipe (numéro): ")) - 1
+        if choix_equipe < 0 or choix_equipe >= tournoi_actuel.get_nombre_equipes():
+            print("⚠ Choix invalide!")
+            return
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
         return
     
-    for equipe in tournoi_actuel.liste_equipes:
-        print(f"\n📋 {equipe.nom_equipe}:")
-        if len(equipe.liste_joueurs) == 0:
-            print("   (Aucun joueur)")
-        else:
-            for joueur in equipe.liste_joueurs:
-                print(f"   - {joueur.pseudo} ({joueur.niveau})")
+    equipe = tournoi_actuel.get_equipes()[choix_equipe]
+    equipe.afficher_joueurs()
+    
+    try:
+        id_joueur = int(input("\n👤 ID du joueur à modifier: "))
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+        return
+    
+    nouveau_pseudo = input("Nouveau pseudo (vide pour ne pas modifier): ").strip()
+    nouvel_email = input("Nouvel email (vide pour ne pas modifier): ").strip()
+    
+    equipe.modifier_joueur(id_joueur, nouveau_pseudo if nouveau_pseudo else None,
+                          nouvel_email if nouvel_email else None)
 
-# Fonction pour générer le bracket
+def supprimer_joueur():
+    """Supprime un joueur"""
+    if tournoi_actuel is None:
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
+        return
+    
+    print("\n" + "="*70)
+    print("         🗑️ SUPPRIMER UN JOUEUR")
+    print("="*70)
+    
+    afficher_equipes()
+    
+    try:
+        choix_equipe = int(input("\n👥 Choisir une équipe (numéro): ")) - 1
+        if choix_equipe < 0 or choix_equipe >= tournoi_actuel.get_nombre_equipes():
+            print("⚠ Choix invalide!")
+            return
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+        return
+    
+    equipe = tournoi_actuel.get_equipes()[choix_equipe]
+    equipe.afficher_joueurs()
+    
+    try:
+        id_joueur = int(input("\n🗑️ ID du joueur à supprimer: "))
+        equipe.supprimer_joueur(id_joueur)
+    except ValueError:
+        print("⚠ Veuillez entrer un nombre valide")
+
+# ============= GESTION DU BRACKET =============
 def generer_bracket():
-    global tournoi_actuel, compteur_bracket
+    """Génère le bracket"""
+    global bracket_actuel, compteur_bracket
     
     if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
         return
     
-    if len(tournoi_actuel.liste_equipes) < 2:
-        print("\n⚠ Erreur: Il faut au moins 2 équipes!")
+    if not tournoi_actuel.est_complet():
+        print(f"\n⚠ ❌ Le tournoi n'est pas complet")
+        print(f"   {tournoi_actuel.get_nombre_equipes()}/{tournoi_actuel.get_max_equipes()} équipes")
         return
     
-    print("\n--- GÉNÉRER LE BRACKET ---")
-    bracket = Bracket(compteur_bracket, tournoi_actuel, "simple")
-    bracket.generer_bracket_simple()
+    if not tournoi_actuel.lancer_tournoi():
+        return
+    
+    bracket_actuel = Bracket(compteur_bracket, tournoi_actuel, "simple")
     compteur_bracket += 1
-    print("✓ Bracket généré avec succès!")
+    
+    bracket_actuel.generer_bracket_simple()
 
-# Fonction pour afficher le bracket
 def afficher_bracket():
-    global tournoi_actuel
-    
-    if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+    """Affiche le bracket actuel"""
+    if bracket_actuel is None:
+        print("\n⚠ ❌ Générez d'abord un bracket!")
         return
     
-    if len(tournoi_actuel.liste_matchs) == 0:
-        print("\n⚠ Aucun match pour le moment. Générez d'abord le bracket!")
-        return
-    
-    print("\n" + "="*60)
-    print("                     BRACKET DU TOURNOI")
-    print("="*60)
-    
-    for match in tournoi_actuel.liste_matchs:
-        match.afficher_info()
-        print("-"*60)
+    bracket_actuel.afficher_bracket_actuel()
 
-# Fonction pour enregistrer un résultat
-def enregistrer_resultat():
-    global tournoi_actuel
-    
-    if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+def simuler_matchs():
+    """Simule tous les matchs du tour actuel"""
+    if bracket_actuel is None:
+        print("\n⚠ ❌ Générez d'abord un bracket!")
         return
     
-    if len(tournoi_actuel.liste_matchs) == 0:
-        print("\n⚠ Aucun match disponible!")
-        return
+    gagnants = bracket_actuel.simuler_tous_matchs_tour(bracket_actuel.get_tour_actuel())
     
-    print("\n--- ENREGISTRER UN RÉSULTAT ---")
-    print("\nMatchs en attente:")
-    
-    matchs_en_attente = [m for m in tournoi_actuel.liste_matchs if m.statut == "En attente"]
-    
-    if len(matchs_en_attente) == 0:
-        print("⚠ Tous les matchs sont terminés!")
-        return
-    
-    for i, match in enumerate(matchs_en_attente):
-        nom1 = match.get_nom(match.participant1)
-        nom2 = match.get_nom(match.participant2)
-        print(f"{i+1}. Match {match.id_match}: {nom1} vs {nom2}")
-    
-    try:
-        choix_match = int(input("Choisir un match (numéro): ")) - 1
-        if choix_match < 0 or choix_match >= len(matchs_en_attente):
-            print("⚠ Choix invalide!")
-            return
-    except:
-        print("⚠ Erreur: Veuillez entrer un nombre valide")
-        return
-    
-    match = matchs_en_attente[choix_match]
-    
-    nom1 = match.get_nom(match.participant1)
-    nom2 = match.get_nom(match.participant2)
-    
-    print(f"\nMatch: {nom1} vs {nom2}")
-    print("1. Victoire de " + nom1)
-    print("2. Victoire de " + nom2)
-    
-    try:
-        choix_gagnant = int(input("Choisir le gagnant (1 ou 2): "))
-        if choix_gagnant == 1:
-            gagnant = match.participant1
-        elif choix_gagnant == 2:
-            gagnant = match.participant2
-        else:
-            print("⚠ Choix invalide!")
-            return
-    except:
-        print("⚠ Erreur: Veuillez entrer un nombre valide")
-        return
-    
-    match.enregistrer_resultat(gagnant)
-    print("✓ Résultat enregistré!")
+    if len(gagnants) > 1:
+        print("\n✅ Tour simulé avec succès!")
+    else:
+        print("\n🏆 TOURNOI TERMINÉ!")
 
-# Fonction pour afficher les statistiques
-def afficher_statistiques():
-    global tournoi_actuel
-    
-    if tournoi_actuel is None:
-        print("\n⚠ Erreur: Créez d'abord un tournoi!")
+def progresser_tournoi():
+    """Fait progresser le tournoi"""
+    if bracket_actuel is None:
+        print("\n⚠ ❌ Générez d'abord un bracket!")
         return
     
-    print("\n" + "="*60)
-    print("               STATISTIQUES DU TOURNOI")
-    print("="*60)
+    if bracket_actuel.progresser_tournoi():
+        print(f"\n✅ Passé au tour {bracket_actuel.get_tour_actuel()}")
+        bracket_actuel.afficher_bracket_actuel()
+    else:
+        print("\n🏆 Tournoi terminé!")
+
+def afficher_stats_bracket():
+    """Affiche les stats du bracket"""
+    if bracket_actuel is None:
+        print("\n⚠ ❌ Générez d'abord un bracket!")
+        return
+    
+    bracket_actuel.afficher_statistiques_bracket()
+
+# ============= STATISTIQUES =============
+def afficher_stats_tournoi():
+    """Affiche les stats du tournoi actif"""
+    if tournoi_actuel is None:
+        print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
+        return
+    
+    print("\n" + "="*70)
+    print("         📊 STATISTIQUES DU TOURNOI")
+    print("="*70)
+    
     tournoi_actuel.afficher_info()
     
-    print("\n--- CLASSEMENT PAR ÉQUIPE ---")
-    equipes_triees = sorted(tournoi_actuel.liste_equipes, 
-                           key=lambda e: e.matchs_gagnes, 
-                           reverse=True)
-    
-    for i, equipe in enumerate(equipes_triees, 1):
-        taux = (equipe.matchs_gagnes / (equipe.matchs_gagnes + equipe.matchs_perdus) * 100 
-                if (equipe.matchs_gagnes + equipe.matchs_perdus) > 0 else 0)
-        print(f"{i}. {equipe.nom_equipe}: {equipe.matchs_gagnes}V - {equipe.matchs_perdus}D ({taux:.1f}%)")
+    print("\n📋 DÉTAILS DES ÉQUIPES:")
+    for equipe in tournoi_actuel.get_equipes():
+        print(f"\n  ⚽ {equipe.get_nom()}:")
+        print(f"     Niveau: {equipe.get_niveau()}/100")
+        print(f"     Joueurs: {equipe.get_nombre_joueurs()}")
+        print(f"     Matchs gagnés: {equipe.get_matchs_gagnes()}")
+        print(f"     Taux victoire: {equipe.get_taux_victoire():.1f}%")
 
-# Fonction principale
+# ============= FONCTION PRINCIPALE =============
 def main():
+    """Boucle principale"""
     while True:
         afficher_menu_principal()
-        choix = input("Votre choix (1-9): ")
+        choix = input("Votre choix (1-6): ").strip()
         
         if choix == "1":
-            creer_tournoi()
+            # Sous-menu tournois
+            while True:
+                afficher_menu_tournois()
+                sous_choix = input("Votre choix (1-6): ").strip()
+                
+                if sous_choix == "1":
+                    creer_tournoi()
+                elif sous_choix == "2":
+                    afficher_liste_tournois()
+                elif sous_choix == "3":
+                    selectionner_tournoi()
+                elif sous_choix == "4":
+                    supprimer_tournoi()
+                elif sous_choix == "5":
+                    afficher_info_tournoi_actif()
+                elif sous_choix == "6":
+                    break
+                else:
+                    print("⚠ Choix invalide!")
+        
         elif choix == "2":
-            ajouter_equipe()
+            if tournoi_actuel is None:
+                print("\n⚠ ❌ Sélectionnez d'abord un tournoi!")
+                continue
+            
+            # Sous-menu équipes
+            while True:
+                afficher_sous_menu_equipes()
+                sous_choix = input("Votre choix (1-7): ").strip()
+                
+                if sous_choix == "1":
+                    ajouter_equipe()
+                elif sous_choix == "2":
+                    afficher_equipes()
+                elif sous_choix == "3":
+                    ajouter_joueur()
+                elif sous_choix == "4":
+                    modifier_joueur()
+                elif sous_choix == "5":
+                    supprimer_joueur()
+                elif sous_choix == "6":
+                    supprimer_equipe()
+                elif sous_choix == "7":
+                    break
+                else:
+                    print("⚠ Choix invalide!")
+        
         elif choix == "3":
-            ajouter_joueur()
-        elif choix == "4":
-            afficher_equipes()
-        elif choix == "5":
             generer_bracket()
+        
+        elif choix == "4":
+            if bracket_actuel is None:
+                print("\n⚠ ❌ Générez d'abord un bracket!")
+                continue
+            
+            # Sous-menu matchs
+            while True:
+                afficher_sous_menu_matchs()
+                sous_choix = input("Votre choix (1-5): ").strip()
+                
+                if sous_choix == "1":
+                    afficher_bracket()
+                elif sous_choix == "2":
+                    simuler_matchs()
+                elif sous_choix == "3":
+                    progresser_tournoi()
+                elif sous_choix == "4":
+                    afficher_stats_bracket()
+                elif sous_choix == "5":
+                    break
+                else:
+                    print("⚠ Choix invalide!")
+        
+        elif choix == "5":
+            afficher_stats_tournoi()
+        
         elif choix == "6":
-            afficher_bracket()
-        elif choix == "7":
-            enregistrer_resultat()
-        elif choix == "8":
-            afficher_statistiques()
-        elif choix == "9":
-            print("\n✓ Au revoir!")
+            print("\n👋 Au revoir!")
             break
+        
         else:
-            print("\n⚠ Choix invalide! Veuillez réessayer.")
+            print("\n⚠ Choix invalide!")
 
-# Exécuter le programme
+# ============= POINT D'ENTRÉE =============
 if __name__ == "__main__":
+    print("\n🎮 Bienvenue dans le Gestionnaire de Tournois E-Sport!")
+    print("   Appuyez sur Entrée pour commencer...")
+    input()
     main()
